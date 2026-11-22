@@ -1,0 +1,7 @@
+CREATE TABLE matches
+(
+    id      INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    player1 INTEGER NOT NULL REFERENCES players (id),
+    player2 INTEGER NOT NULL REFERENCES players (id),
+    winner  INTEGER NOT NULL REFERENCES players (id)
+);
