@@ -6,10 +6,14 @@ import java.util.Optional;
 
 public class Set {
 
+    private static final int REGULAR_GAME_MIN_POINTS = 4;
+    private static final int TIE_BREAK_MIN_POINTS = 7;
+    private static final int MIN_POINT_LEAD = 2;
     private static final int MIN_GAMES_TO_WIN = 6;
     private static final int MIN_GAME_LEAD = 2;
     private static final int TIE_BREAK_THRESHOLD = 6;
     private static final int TIE_BREAK_WINNING_GAMES = 7;
+
     private final Player firstPlayer;
     private final Player secondPlayer;
     private Game currentGame;
@@ -19,7 +23,7 @@ public class Set {
     public Set(Player firstPlayer, Player secondPlayer) {
         this.firstPlayer = firstPlayer;
         this.secondPlayer = secondPlayer;
-        currentGame = new RegularGame(firstPlayer, secondPlayer);
+        currentGame = new Game(firstPlayer, secondPlayer, REGULAR_GAME_MIN_POINTS, MIN_POINT_LEAD, false);
     }
 
     public void awardPoint(Player player) {
@@ -42,9 +46,9 @@ public class Set {
 
             if (!isSetOver()) {
                 if (firstPlayerGames == TIE_BREAK_THRESHOLD && secondPlayerGames == TIE_BREAK_THRESHOLD) {
-                    currentGame = new TieBreakGame(firstPlayer, secondPlayer);
+                    currentGame = new Game(firstPlayer, secondPlayer, TIE_BREAK_MIN_POINTS, MIN_POINT_LEAD, true);
                 } else {
-                    currentGame = new RegularGame(firstPlayer, secondPlayer);
+                    currentGame = new Game(firstPlayer, secondPlayer, REGULAR_GAME_MIN_POINTS, MIN_POINT_LEAD, false);
                 }
             }
         }
@@ -60,7 +64,6 @@ public class Set {
         }
 
         return Optional.of(secondPlayer);
-
     }
 
     public boolean isSetOver() {
@@ -87,6 +90,6 @@ public class Set {
     }
 
     public boolean isTieBreak() {
-        return currentGame instanceof TieBreakGame;
+        return currentGame.isTieBreak();
     }
 }

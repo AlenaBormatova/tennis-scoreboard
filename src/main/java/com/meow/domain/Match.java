@@ -61,7 +61,7 @@ public class Match {
     }
 
     public boolean isMatchOver() {
-        return (firstPlayerSets >= MIN_SETS_TO_WIN) || (secondPlayerSets >= MIN_SETS_TO_WIN);
+        return firstPlayerSets >= MIN_SETS_TO_WIN || secondPlayerSets >= MIN_SETS_TO_WIN;
     }
 
     public int getSets(Player player) {
