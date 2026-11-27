@@ -2,16 +2,17 @@ package com.meow.domain;
 
 import com.meow.entity.Player;
 
+import java.util.Optional;
+
 public class Set {
 
     private static final int MIN_GAMES_TO_WIN = 6;
     private static final int MIN_GAME_LEAD = 2;
     private static final int TIE_BREAK_THRESHOLD = 6;
     private static final int TIE_BREAK_WINNING_GAMES = 7;
-
-    private Game currentGame;
     private final Player firstPlayer;
     private final Player secondPlayer;
+    private Game currentGame;
     private int firstPlayerGames;
     private int secondPlayerGames;
 
@@ -29,7 +30,10 @@ public class Set {
         currentGame.awardPoint(player);
 
         if (currentGame.isGameOver()) {
-            Player winner = currentGame.determineWinner();
+
+            Player winner = currentGame.determineWinner()
+                    .orElseThrow(() -> new IllegalStateException("Completed game must have a winner"));
+
             if (winner.equals(firstPlayer)) {
                 firstPlayerGames++;
             } else {
@@ -46,16 +50,17 @@ public class Set {
         }
     }
 
-    public Player determineWinner() {
+    public Optional<Player> determineWinner() {
         if (!isSetOver()) {
-            return null;
+            return Optional.empty();
         }
 
         if (firstPlayerGames > secondPlayerGames) {
-            return firstPlayer;
-        } else {
-            return secondPlayer;
+            return Optional.of(firstPlayer);
         }
+
+        return Optional.of(secondPlayer);
+
     }
 
     public boolean isSetOver() {
@@ -72,11 +77,13 @@ public class Set {
     public int getGames(Player player) {
         if (player.equals(firstPlayer)) {
             return firstPlayerGames;
-        } else if (player.equals(secondPlayer)) {
-            return secondPlayerGames;
-        } else {
-            throw new IllegalArgumentException("Player is not a participant");
         }
+
+        if (player.equals(secondPlayer)) {
+            return secondPlayerGames;
+        }
+
+        throw new IllegalArgumentException("Player is not a participant");
     }
 
     public boolean isTieBreak() {

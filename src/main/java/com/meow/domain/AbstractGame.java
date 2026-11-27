@@ -2,6 +2,8 @@ package com.meow.domain;
 
 import com.meow.entity.Player;
 
+import java.util.Optional;
+
 public abstract class AbstractGame implements Game {
 
     private static final int MIN_POINT_LEAD = 2;
@@ -32,16 +34,16 @@ public abstract class AbstractGame implements Game {
     }
 
     @Override
-    public Player determineWinner() {
+    public Optional<Player> determineWinner() {
         if (!isGameOver()) {
-            return null;
+            return Optional.empty();
         }
 
         if (pointFirstPlayer > pointSecondPlayer) {
-            return firstPlayer;
-        } else {
-            return secondPlayer;
+            return Optional.of(firstPlayer);
         }
+
+        return Optional.of(secondPlayer);
     }
 
     @Override
@@ -55,20 +57,25 @@ public abstract class AbstractGame implements Game {
     protected int getPoints(Player player) {
         if (player.equals(firstPlayer)) {
             return pointFirstPlayer;
-        } else if (player.equals(secondPlayer)) {
-            return pointSecondPlayer;
-        } else {
-            throw new IllegalArgumentException("Player is not a participant");
         }
+
+        if (player.equals(secondPlayer)) {
+            return pointSecondPlayer;
+        }
+
+        throw new IllegalArgumentException("Player is not a participant");
     }
 
     protected int getOpponentPoints(Player player) {
         if (player.equals(firstPlayer)) {
             return pointSecondPlayer;
-        } else if (player.equals(secondPlayer)) {
-            return pointFirstPlayer;
-        } else {
-            throw new IllegalArgumentException("Player is not a participant");
         }
+
+        if (player.equals(secondPlayer)) {
+            return pointFirstPlayer;
+        }
+
+        throw new IllegalArgumentException("Player is not a participant");
+
     }
 }

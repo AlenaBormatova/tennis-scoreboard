@@ -3,6 +3,8 @@ package com.meow.domain;
 import com.meow.entity.Player;
 import lombok.Getter;
 
+import java.util.Optional;
+
 public class Match {
 
     private static final int MIN_SETS_TO_WIN = 2;
@@ -29,7 +31,10 @@ public class Match {
         currentSet.awardPoint(player);
 
         if (currentSet.isSetOver()) {
-            Player winner = currentSet.determineWinner();
+
+            Player winner = currentSet.determineWinner()
+                    .orElseThrow(() -> new IllegalStateException("Completed set must have a winner"));
+
             if (winner.equals(firstPlayer)) {
                 firstPlayerSets++;
             } else {
@@ -42,16 +47,17 @@ public class Match {
         }
     }
 
-    public Player determineWinner() {
+    public Optional<Player> determineWinner() {
         if (!isMatchOver()) {
-            return null;
+            return Optional.empty();
         }
 
         if (firstPlayerSets > secondPlayerSets) {
-            return firstPlayer;
-        } else {
-            return secondPlayer;
+            return Optional.of(firstPlayer);
         }
+
+        return Optional.of(secondPlayer);
+
     }
 
     public boolean isMatchOver() {
@@ -61,11 +67,13 @@ public class Match {
     public int getSets(Player player) {
         if (player.equals(firstPlayer)) {
             return firstPlayerSets;
-        } else if (player.equals(secondPlayer)) {
-            return secondPlayerSets;
-        } else {
-            throw new IllegalArgumentException("Player is not a participant");
         }
+
+        if (player.equals(secondPlayer)) {
+            return secondPlayerSets;
+        }
+
+        throw new IllegalArgumentException("Player is not a participant");
     }
 
     public int getGames(Player player) {
